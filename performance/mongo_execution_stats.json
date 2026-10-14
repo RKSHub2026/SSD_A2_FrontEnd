@@ -1,0 +1,33 @@
+{
+  "database": "ridesync_db",
+  "mongo_version": "8.0.29",
+  "generated_at": "2026-09-03T23:40:44.612702",
+  "workflow3_geonear": {
+    "collection": "TelemetryPings",
+    "operator": "$geoNear",
+    "description": "Find 5 available vehicles within 5 km",
+    "max_distance_meters": 5000,
+    "filter": {
+      "isAvailable": true
+    },
+    "index_used": [
+      "location_2dsphere"
+    ],
+    "nReturned_final_stage": 5,
+    "max_keysExamined_observed": 6654,
+    "max_docsExamined_observed": 215491,
+    "executionTimeMillisEstimate_last": 1039
+  },
+  "workflow4_facet": {
+    "collection": "TripReviews",
+    "operators": [
+      "$facet",
+      "$unwind"
+    ],
+    "description": "Rating distribution, common feedback tags, overall average rating",
+    "nReturned_final_stage": 1,
+    "max_keysExamined_observed": 0,
+    "max_docsExamined_observed": 100000,
+    "executionTimeMillisEstimate_last": 133
+  }
+}

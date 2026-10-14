@@ -1,0 +1,442 @@
+============================================================
+WORKFLOW 4: MULTI-FACETED REVIEW ANALYTICS
+============================================================
+Collection: TripReviews
+Purpose: Rating distribution, frequent feedback tags, average rating
+Required operators: $facet, $unwind, $group, $sort
+Document count: 100000
+
+------------------------------------------------------------
+PIPELINE
+------------------------------------------------------------
+[
+  {
+    '$facet': {
+      rating_distribution: [
+        {
+          '$group': {
+            _id: '$rating',
+            count: {
+              '$sum': 1
+            }
+          }
+        },
+        {
+          '$sort': {
+            _id: -1
+          }
+        }
+      ],
+      common_feedback: [
+        {
+          '$unwind': '$feedback_tags'
+        },
+        {
+          '$group': {
+            _id: '$feedback_tags',
+            total_occurrences: {
+              '$sum': 1
+            }
+          }
+        },
+        {
+          '$sort': {
+            total_occurrences: -1
+          }
+        },
+        {
+          '$limit': 10
+        }
+      ],
+      overall_average_rating: [
+        {
+          '$group': {
+            _id: null,
+            average_rating: {
+              '$avg': '$rating'
+            }
+          }
+        },
+        {
+          '$project': {
+            _id: 0,
+            average_rating: 1
+          }
+        }
+      ]
+    }
+  }
+]
+
+------------------------------------------------------------
+EXPLAIN: executionStats
+------------------------------------------------------------
+{
+  explainVersion: '1',
+  stages: [
+    {
+      '$cursor': {
+        queryPlanner: {
+          namespace: 'ridesync_db.TripReviews',
+          parsedQuery: {},
+          indexFilterSet: false,
+          queryHash: 'E1DF52B8',
+          planCacheShapeHash: 'E1DF52B8',
+          planCacheKey: '5FDFDD28',
+          optimizationTimeMillis: 0,
+          maxIndexedOrSolutionsReached: false,
+          maxIndexedAndSolutionsReached: false,
+          maxScansToExplodeReached: false,
+          prunedSimilarIndexes: false,
+          winningPlan: {
+            isCached: false,
+            stage: 'PROJECTION_SIMPLE',
+            transformBy: {
+              feedback_tags: 1,
+              rating: 1,
+              _id: 0
+            },
+            inputStage: {
+              stage: 'COLLSCAN',
+              direction: 'forward'
+            }
+          },
+          rejectedPlans: []
+        },
+        executionStats: {
+          executionSuccess: true,
+          nReturned: 100000,
+          executionTimeMillis: 131,
+          totalKeysExamined: 0,
+          totalDocsExamined: 100000,
+          executionStages: {
+            isCached: false,
+            stage: 'PROJECTION_SIMPLE',
+            nReturned: 100000,
+            executionTimeMillisEstimate: 23,
+            works: 100001,
+            advanced: 100000,
+            needTime: 0,
+            needYield: 0,
+            saveState: 13,
+            restoreState: 13,
+            isEOF: 1,
+            transformBy: {
+              feedback_tags: 1,
+              rating: 1,
+              _id: 0
+            },
+            inputStage: {
+              stage: 'COLLSCAN',
+              nReturned: 100000,
+              executionTimeMillisEstimate: 0,
+              works: 100001,
+              advanced: 100000,
+              needTime: 0,
+              needYield: 0,
+              saveState: 13,
+              restoreState: 13,
+              isEOF: 1,
+              direction: 'forward',
+              docsExamined: 100000
+            }
+          }
+        }
+      },
+      nReturned: Long('100000'),
+      executionTimeMillisEstimate: Long('33')
+    },
+    {
+      '$facet': {
+        rating_distribution: [
+          {
+            '$internalFacetTeeConsumer': {},
+            nReturned: Long('100000'),
+            executionTimeMillisEstimate: Long('33')
+          },
+          {
+            '$group': {
+              _id: '$rating',
+              count: {
+                '$sum': {
+                  '$const': 1
+                }
+              }
+            },
+            maxAccumulatorMemoryUsageBytes: {
+              count: Long('640')
+            },
+            totalOutputDataSizeBytes: Long('1225'),
+            usedDisk: false,
+            spills: Long('0'),
+            spilledDataStorageSize: Long('0'),
+            numBytesSpilledEstimate: Long('0'),
+            spilledRecords: Long('0'),
+            nReturned: Long('5'),
+            executionTimeMillisEstimate: Long('52')
+          },
+          {
+            '$sort': {
+              sortKey: {
+                _id: -1
+              }
+            },
+            totalDataSizeSortedBytesEstimate: Long('1265'),
+            usedDisk: false,
+            spills: Long('0'),
+            spilledDataStorageSize: Long('0'),
+            nReturned: Long('5'),
+            executionTimeMillisEstimate: Long('52')
+          }
+        ],
+        common_feedback: [
+          {
+            '$internalFacetTeeConsumer': {},
+            nReturned: Long('100000'),
+            executionTimeMillisEstimate: Long('0')
+          },
+          {
+            '$unwind': {
+              path: '$feedback_tags'
+            },
+            nReturned: Long('249371'),
+            executionTimeMillisEstimate: Long('30')
+          },
+          {
+            '$group': {
+              _id: '$feedback_tags',
+              total_occurrences: {
+                '$sum': {
+                  '$const': 1
+                }
+              }
+            },
+            maxAccumulatorMemoryUsageBytes: {
+              total_occurrences: Long('1280')
+            },
+            totalOutputDataSizeBytes: Long('2450'),
+            usedDisk: false,
+            spills: Long('0'),
+            spilledDataStorageSize: Long('0'),
+            numBytesSpilledEstimate: Long('0'),
+            spilledRecords: Long('0'),
+            nReturned: Long('10'),
+            executionTimeMillisEstimate: Long('50')
+          },
+          {
+            '$sort': {
+              sortKey: {
+                total_occurrences: -1
+              },
+              limit: Long('10')
+            },
+            totalDataSizeSortedBytesEstimate: Long('2530'),
+            usedDisk: false,
+            spills: Long('0'),
+            spilledDataStorageSize: Long('0'),
+            nReturned: Long('10'),
+            executionTimeMillisEstimate: Long('50')
+          }
+        ],
+        overall_average_rating: [
+          {
+            '$internalFacetTeeConsumer': {},
+            nReturned: Long('100000'),
+            executionTimeMillisEstimate: Long('10')
+          },
+          {
+            '$group': {
+              _id: {
+                '$const': null
+              },
+              average_rating: {
+                '$avg': '$rating'
+              }
+            },
+            maxAccumulatorMemoryUsageBytes: {
+              average_rating: Long('104')
+            },
+            totalOutputDataSizeBytes: Long('245'),
+            usedDisk: false,
+            spills: Long('0'),
+            spilledDataStorageSize: Long('0'),
+            numBytesSpilledEstimate: Long('0'),
+            spilledRecords: Long('0'),
+            nReturned: Long('1'),
+            executionTimeMillisEstimate: Long('20')
+          },
+          {
+            '$project': {
+              average_rating: true,
+              _id: false
+            },
+            nReturned: Long('1'),
+            executionTimeMillisEstimate: Long('20')
+          }
+        ]
+      },
+      nReturned: Long('1'),
+      executionTimeMillisEstimate: Long('122')
+    }
+  ],
+  queryShapeHash: '97AE11388367B41BB9C46F7A0235C246201DD0B7802CCDC188AD119A19D5188A',
+  serverInfo: {
+    host: 'user-Inspiron-15-3511',
+    port: 27017,
+    version: '8.0.29',
+    gitVersion: '559d67c651f7393e62757234a0b25cb7a8622148'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  command: {
+    aggregate: 'TripReviews',
+    pipeline: [
+      {
+        '$facet': {
+          rating_distribution: [
+            {
+              '$group': {
+                _id: '$rating',
+                count: {
+                  '$sum': 1
+                }
+              }
+            },
+            {
+              '$sort': {
+                _id: -1
+              }
+            }
+          ],
+          common_feedback: [
+            {
+              '$unwind': '$feedback_tags'
+            },
+            {
+              '$group': {
+                _id: '$feedback_tags',
+                total_occurrences: {
+                  '$sum': 1
+                }
+              }
+            },
+            {
+              '$sort': {
+                total_occurrences: -1
+              }
+            },
+            {
+              '$limit': 10
+            }
+          ],
+          overall_average_rating: [
+            {
+              '$group': {
+                _id: null,
+                average_rating: {
+                  '$avg': '$rating'
+                }
+              }
+            },
+            {
+              '$project': {
+                _id: 0,
+                average_rating: 1
+              }
+            }
+          ]
+        }
+      }
+    ],
+    cursor: {},
+    '$db': 'ridesync_db'
+  },
+  ok: 1
+}
+
+------------------------------------------------------------
+ACTUAL QUERY RESULTS
+------------------------------------------------------------
+[
+  {
+    rating_distribution: [
+      {
+        _id: 5,
+        count: 20044
+      },
+      {
+        _id: 4,
+        count: 19892
+      },
+      {
+        _id: 3,
+        count: 20040
+      },
+      {
+        _id: 2,
+        count: 20079
+      },
+      {
+        _id: 1,
+        count: 19945
+      }
+    ],
+    common_feedback: [
+      {
+        _id: 'friendly',
+        total_occurrences: 25219
+      },
+      {
+        _id: 'fast',
+        total_occurrences: 25113
+      },
+      {
+        _id: 'safe',
+        total_occurrences: 25021
+      },
+      {
+        _id: 'professional',
+        total_occurrences: 24993
+      },
+      {
+        _id: 'slow',
+        total_occurrences: 24923
+      },
+      {
+        _id: 'clean',
+        total_occurrences: 24907
+      },
+      {
+        _id: 'polite',
+        total_occurrences: 24906
+      },
+      {
+        _id: 'comfortable',
+        total_occurrences: 24871
+      },
+      {
+        _id: 'helpful',
+        total_occurrences: 24861
+      },
+      {
+        _id: 'late',
+        total_occurrences: 24557
+      }
+    ],
+    overall_average_rating: [
+      {
+        average_rating: 3.00011
+      }
+    ]
+  }
+]

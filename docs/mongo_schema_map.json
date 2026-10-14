@@ -1,0 +1,58 @@
+{
+  "database": "ridesync_db",
+  "notes": [
+    "A2: vehicleId everywhere = PostgreSQL vehicles.id (UUID as string). A1 used V00001..V00150, which matched nothing in PostgreSQL.",
+    "Validators ($jsonSchema, validationLevel strict) are defined in mongo/01_collections_and_indexes.js."
+  ],
+  "collections": {
+    "VehicleMetadata": {
+      "purpose": "Flexible vehicle catalog: inspection history, dynamic specs, maintenance, insurance",
+      "fields": {
+        "_id": "ObjectId",
+        "vehicleId": "String (required, unique) -> vehicles.id",
+        "licensePlate": "String (required) -> vehicles.license_plate",
+        "class": "String (required) -> vehicles.class",
+        "isActive": "Boolean",
+        "make": "String", "model": "String", "year": "Int", "color": "String",
+        "features": "Array<String>",
+        "specs": "Object - keys vary by class/fuel: seats, fuelType, transmission, batteryKWh?, rangeKm?, fastCharging?, cngTankKg?, driveTrain?, bootLitres?",
+        "inspection": "Object {status, date} - latest inspection (A1 shape)",
+        "inspectionHistory": "Array<Object {date, inspector, status, odometerKm, checks{brakes,tyres,lights}, notes?}>",
+        "maintenance": "Object {lastService: Date, serviceDue: Boolean}",
+        "insurance": "Object {provider, policyNumber, valid, expiresOn}",
+        "outOfServiceReason": "String (only on inactive vehicles)",
+        "updatedAt": "Date (required)"
+      },
+      "indexes": ["_id_", "vehicleId_unique (unique)", "licensePlate_1"]
+    },
+    "TripReviews": {
+      "purpose": "Rider reviews with ratings and driver feedback tags",
+      "fields": {
+        "_id": "ObjectId",
+        "vehicleId": "String (required) -> vehicles.id",
+        "riderId": "String -> riders.id",
+        "rating": "Int 1-5 (required)",
+        "feedback_tags": "Array<String> (required)",
+        "driver_feedback": "String",
+        "createdAt": "Date (required)"
+      },
+      "indexes": ["_id_", "rating_1", "vehicleId_createdAt {vehicleId:1, createdAt:-1}", "createdAt_-1"]
+    },
+    "TelemetryPings": {
+      "purpose": "High-volume real-time vehicle location telemetry",
+      "fields": {
+        "_id": "ObjectId",
+        "vehicleId": "String (required) -> vehicles.id",
+        "isAvailable": "Boolean (required)",
+        "location": { "type": "\"Point\" (required)", "coordinates": "[longitude, latitude] (required)" },
+        "createdAt": "Date (required)"
+      },
+      "indexes": [
+        "_id_",
+        "location_2dsphere_createdAt {location:'2dsphere', createdAt:-1}",
+        "createdAt_ttl_2h {createdAt:1} expireAfterSeconds 7200",
+        "vehicleId_createdAt {vehicleId:1, createdAt:-1}"
+      ]
+    }
+  }
+}

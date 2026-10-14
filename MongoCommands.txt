@@ -1,0 +1,126 @@
+# ============================================================
+# RideSync Project 2 — MongoDB command reference (updated for A2)
+# Run every command from the repository root.
+# A2: all scripts now select ridesync_db themselves (A1's
+# `mongosh --file ...` ran against the default "test" database).
+# ============================================================
+
+# ------------------------------------------------------------
+# 1. Start MongoDB and check it is alive (expect: { ok: 1 })
+# ------------------------------------------------------------
+sudo systemctl start mongod
+mongosh --quiet --eval 'db.runCommand({ ping: 1 })'
+
+# ------------------------------------------------------------
+# 2. Python drivers (pymongo for MongoDB; psycopg2 lets live mode read
+#    vehicle availability from PostgreSQL)
+# ------------------------------------------------------------
+python3 -m pip install pymongo psycopg2-binary
+
+# ------------------------------------------------------------
+# 3. Collections, $jsonSchema validators and indexes - run BEFORE seeding.
+#    Safe to re-run. Creates:
+#      TelemetryPings : location_2dsphere_createdAt, createdAt_ttl_2h (TTL 7200 s),
+#                       vehicleId_createdAt
+#      TripReviews    : rating_1, vehicleId_createdAt, createdAt_-1
+#      VehicleMetadata: vehicleId_unique, licensePlate_1
+# ------------------------------------------------------------
+mongosh --quiet --file mongo/01_collections_and_indexes.js
+
+# ------------------------------------------------------------
+# 4. Seed: VehicleMetadata = 100 (same vehicles as PostgreSQL),
+#          TripReviews = 100,000, TelemetryPings = 500,000
+# ------------------------------------------------------------
+python3 data_generations/mongo_seeder.py
+
+# ------------------------------------------------------------
+# 5. Keep live pings flowing (needed for Workflow 3 / the Map screen):
+#    the 2-hour TTL deletes old pings and Workflow 3 only looks at the
+#    last 10 minutes. Leave this running in its own terminal. Ctrl+C stops it.
+# ------------------------------------------------------------
+python3 data_generations/mongo_seeder.py --live
+
+# ------------------------------------------------------------
+# 6. Inspect one document from each collection
+# ------------------------------------------------------------
+mongosh --quiet --eval '
+db = db.getSiblingDB("ridesync_db");
+printjson(db.VehicleMetadata.findOne());
+printjson(db.TripReviews.findOne());
+printjson(db.TelemetryPings.find().sort({ createdAt: -1 }).limit(1).toArray());
+'
+
+# ------------------------------------------------------------
+# 7. Verify indexes
+# ------------------------------------------------------------
+mongosh --quiet --eval '
+db = db.getSiblingDB("ridesync_db");
+["VehicleMetadata", "TripReviews", "TelemetryPings"].forEach(c => {
+  print("=== " + c + " ===");
+  db[c].getIndexes().forEach(ix => print("  " + ix.name + (ix.expireAfterSeconds !== undefined ? " (TTL " + ix.expireAfterSeconds + "s)" : "")));
+});
+'
+
+# ------------------------------------------------------------
+# 8. WORKFLOW 3 — nearest AVAILABLE VEHICLES within 5 km ($geoNear)
+#    One row per vehicle (its latest ping in the last 10 minutes).
+# ------------------------------------------------------------
+mongosh --quiet --file mongo/02_workflow3_geonear.js
+python3 data_generations/get_geo_summary.py          # several locations + explain summary
+
+# ------------------------------------------------------------
+# 9. WORKFLOW 4 — review analytics ($facet): rating distribution,
+#    top 10 feedback tags ($unwind), overall average rating
+# ------------------------------------------------------------
+mongosh --quiet --file mongo/03_workflow4_facet.js
+
+# ------------------------------------------------------------
+# 10. FULL COMBINED DEMO — best for the viva
+#     counts + indexes + Workflow 3 + Workflow 4 + explain summaries
+# ------------------------------------------------------------
+mongosh --quiet --file mongo/run_all_mongo_workflows.js
+
+# ------------------------------------------------------------
+# 11. Regenerate the performance evidence
+#     Writes performance/mongo_execution_stats.json and performance/mongo_explain_raw.json
+# ------------------------------------------------------------
+python3 data_generations/generate_mongo_stats.py
+cat performance/mongo_execution_stats.json
+
+# ------------------------------------------------------------
+# 12. Explain proof by hand — Workflow 3 uses the 2dsphere index
+# ------------------------------------------------------------
+mongosh --quiet --eval '
+db = db.getSiblingDB("ridesync_db");
+const since = new Date(Date.now() - 10 * 60 * 1000);
+const ex = db.TelemetryPings.explain("executionStats").aggregate([
+  { $geoNear: { near: { type: "Point", coordinates: [-73.9857, 40.7484] }, key: "location",
+                distanceField: "distanceMeters", maxDistance: 5000, spherical: true,
+                query: { createdAt: { $gte: since } } } },
+  { $limit: 5 }
+]);
+printjson(ex.stages ? ex.stages[0] : ex.queryPlanner);
+'
+
+# ------------------------------------------------------------
+# 13. Top up reviews without re-seeding everything
+# ------------------------------------------------------------
+python3 data_generations/generate_trip_reviews.py --target 100000
+
+# ------------------------------------------------------------
+# 14. Insert single documents by hand (ids must be real PostgreSQL vehicle ids)
+# ------------------------------------------------------------
+mongosh --quiet --eval '
+db = db.getSiblingDB("ridesync_db");
+const v = db.VehicleMetadata.findOne({ isActive: true });
+db.TripReviews.insertOne({
+  vehicleId: v.vehicleId, rating: 5, feedback_tags: ["clean", "friendly", "fast"],
+  driver_feedback: "Excellent ride, very smooth", createdAt: new Date()
+});
+db.TelemetryPings.insertOne({
+  vehicleId: v.vehicleId, isAvailable: true,
+  location: { type: "Point", coordinates: [-73.9857, 40.7484] },   // [longitude, latitude]
+  createdAt: new Date()
+});
+print("Inserted a review and a ping for " + v.licensePlate);
+'
