@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RideSync</title>
+  <style>
+    body { font: 15px/1.5 system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #1c2430; }
+    code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
+    pre { background: #0f1720; color: #d7e0ea; padding: 12px; border-radius: 8px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h1>RideSync</h1>
+  <p>Phase 1 placeholder - the real interface arrives in Phase 3. The API is served from this same server.</p>
+  <h2>API health</h2>
+  <pre id="health">loading…</pre>
+  <h2>Try</h2>
+  <ul>
+    <li><a href="/api/riders?q=rider_004&pageSize=5">/api/riders?q=rider_004&amp;pageSize=5</a></li>
+    <li><a href="/api/vehicles?available=true&pageSize=5">/api/vehicles?available=true&amp;pageSize=5</a></li>
+    <li><a href="/api/trips?active=true">/api/trips?active=true</a></li>
+    <li><a href="/api/trips?status=IN_TRANSIT">/api/trips?status=IN_TRANSIT</a> (friendly 400)</li>
+  </ul>
+  <script type="module">
+    import { formatDateTime } from "/shared/format.js";
+    const el = document.getElementById("health");
+    try {
+      const res = await fetch("/api/health");
+      const body = await res.json();
+      el.textContent = `${JSON.stringify(body, null, 2)}\n\nchecked ${formatDateTime(body.time)}`;
+    } catch (e) {
+      el.textContent = `API not reachable: ${e.message}`;
+    }
+  </script>
+</body>
+</html>
