@@ -7,9 +7,9 @@ money in the audit trail, compare vehicle revenue, find the nearest free car, an
 
 | | |
 |---|---|
-| **Repository** | `<TODO: https://github.com/<owner>/<repo>>` |
-| **Final commit** | `<TODO: commit hash>` (see [Submission checklist](#submission-checklist)) |
-| **Demo video** | `<TODO: link to the video, 5 minutes or less>`, following [`docs/demo_script.md`](docs/demo_script.md) |
+| **Repository** | `https://github.com/RKSHub2026/SSD_A2_FrontEnd|
+| **Final commit** | `c33b51f904af01beb3c76bc482500ece4c0bf0b0` (see [Submission checklist](#submission-checklist)) |
+| **Demo video** |
 | **Inherited A1 repository** | https://github.com/dudekulamahammad/2026202016_a1 |
 | **Team 11** | Muthiah Sivavelan, Rahul Singh, Gnanadeepak Yerra, Sanjay Gedela |
 
