@@ -99,7 +99,9 @@ r4.rating_distribution.forEach(x => print(`  ${x._id} stars : ${x.count}`));
 print("TOP 10 FEEDBACK TAGS");
 r4.common_feedback.forEach((x, i) => print(`  ${i + 1}. ${x._id} : ${x.total_occurrences}`));
 print("OVERALL AVERAGE RATING");
-print("  " + r4.overall_average_rating[0].average_rating + " over " + r4.overall_average_rating[0].total_reviews + " reviews");
+const overall = r4.overall_average_rating[0];
+if (overall) print("  " + overall.average_rating + " over " + overall.total_reviews + " reviews");
+else print("  no reviews yet - run: python3 data_generations/mongo_seeder.py");
 printExplain("\nWorkflow 4 explain (executionStats):",
              db.TripReviews.explain("executionStats").aggregate(w4));
 print("  note: $facet sub-pipelines cannot use indexes; a full scan of TripReviews is expected");

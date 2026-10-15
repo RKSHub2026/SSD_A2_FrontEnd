@@ -1,0 +1,31 @@
+{
+  "name": "ridesync-a1b",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "RideSync (Project 2) - A2 web front end (HTML/CSS/JS) + Express API on the inherited A1 PostgreSQL/MongoDB backend",
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=.env api/server.js",
+    "start": "node --env-file-if-exists=.env api/server.js",
+    "test": "node --env-file-if-exists=.env --test --test-concurrency=1 test/api/",
+    "e2e": "playwright test",
+    "lint": "biome check .",
+    "format": "biome check --write ."
+  },
+  "dependencies": {
+    "chart.js": "^4.5.0",
+    "express": "^5.1.0",
+    "leaflet": "^1.9.4",
+    "mongodb": "^6.20.0",
+    "pg": "^8.16.3",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.4",
+    "@playwright/test": "^1.55.0",
+    "supertest": "^7.1.4"
+  }
+}
