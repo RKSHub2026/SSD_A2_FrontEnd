@@ -23,7 +23,7 @@ The full per-file change list is in the README under *Changes to the inherited b
 
 ## What we changed and why
 
-All changes are edits to existing files; nothing was added or deleted.
+All backend changes are edits to the existing files in `sql/`, `mongo/`, `data_generations/` and `performance/`; no backend file was added or deleted. The A2 application lives in new folders (`api/`, `shared/`, `web/`, `test/`).
 
 1. **One fleet for both databases.** Deterministic `uuid5` ids are defined once in `postgres_seeder.py` and imported by the Mongo seeders. The front end can now join a map result or a review to a bookable vehicle.
 2. **Workflow 1 made usable from a UI.**

@@ -15,6 +15,8 @@
     "e2e": "playwright test",
     "e2e:install": "playwright install chromium",
     "test:all": "npm run test:db && npm test && npm run e2e",
+    "screenshots": "node test/support/screenshots.js",
+    "wireframes": "node docs/design/wireframes/render.js",
     "lint": "biome check .",
     "format": "biome check --write ."
   },
