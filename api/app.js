@@ -2,8 +2,13 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { config } from "./config.js";
 import { AppError, toApiError } from "./lib/errors.js";
+import { analyticsRouter } from "./routes/analytics.js";
+import { auditRouter } from "./routes/audit.js";
+import { bookingRouter } from "./routes/booking.js";
 import { browseRouter } from "./routes/browse.js";
 import { healthRouter } from "./routes/health.js";
+import { mapRouter } from "./routes/map.js";
+import { reviewsRouter } from "./routes/reviews.js";
 
 const path = (rel) => fileURLToPath(new URL(rel, import.meta.url));
 
@@ -26,6 +31,11 @@ export function createApp(deps) {
   // ---- API ----
   app.use("/api", healthRouter(deps));
   app.use("/api", browseRouter(deps));
+  app.use("/api", bookingRouter(deps));
+  app.use("/api", auditRouter(deps));
+  app.use("/api", analyticsRouter(deps));
+  app.use("/api", mapRouter(deps));
+  app.use("/api", reviewsRouter(deps));
   // Unknown /api/* paths -> JSON 404 (never the HTML page)
   app.use("/api", (req, _res, next) =>
     next(new AppError("NOT_FOUND", `No API route for ${req.method} ${req.originalUrl}`)),
@@ -51,7 +61,10 @@ function errorHandler(err, req, res, next) {
 
 /** Minimal request log: everything at LOG_LEVEL=debug, otherwise only errors and slow calls. */
 function requestLogger(req, res, next) {
-  if (config.logLevel === "silent" || !req.path.startsWith("/api")) return next();
+  // the map stream stays open for minutes, so its duration is not a "slow request"
+  if (config.logLevel === "silent" || !req.path.startsWith("/api") || req.path === "/api/map/stream") {
+    return next();
+  }
   const start = performance.now();
   res.on("finish", () => {
     const ms = performance.now() - start;

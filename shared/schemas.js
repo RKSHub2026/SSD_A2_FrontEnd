@@ -18,7 +18,12 @@ import {
 
 // ---------------------------------------------------------------- primitives
 
-export const Uuid = z.uuid({ message: "Must be a valid UUID" });
+/**
+ * Any 8-4-4-4-12 hex id, like PostgreSQL's uuid type. z.uuid() is stricter
+ * (RFC version/variant bits) and would reject ids PostgreSQL accepts, such as
+ * the fixtures in test/db/test_booking_workflow.sql.
+ */
+export const Uuid = z.guid({ message: "Must be a valid UUID" });
 export const IsoDate = z.iso.date({ message: "Use the YYYY-MM-DD format" });
 export const TripStatusSchema = z.enum(TRIP_STATUSES);
 export const AuditActionSchema = z.enum(AUDIT_ACTIONS);
@@ -48,6 +53,36 @@ const SearchText = z
   .max(50)
   .optional()
   .transform((v) => (v ? v : undefined));
+
+/**
+ * Checks an optional from/to pair: to >= from and, if maxDays is given, at
+ * most maxDays days inclusive. The error is reported on the "to" field.
+ * ISO dates compare correctly as strings.
+ */
+const checkRange =
+  (maxDays) =>
+  ({ value, issues }) => {
+    const { from, to } = value;
+    if (!from || !to) return;
+    if (to < from) {
+      issues.push({
+        code: "custom",
+        input: to,
+        path: ["to"],
+        message: "End date must be on or after the start date",
+      });
+      return;
+    }
+    const days = (Date.parse(to) - Date.parse(from)) / 86_400_000 + 1;
+    if (maxDays && days > maxDays) {
+      issues.push({
+        code: "custom",
+        input: to,
+        path: ["to"],
+        message: `Pick a range of at most ${maxDays} days`,
+      });
+    }
+  };
 
 export const IdParams = z.object({ id: Uuid });
 
@@ -79,7 +114,7 @@ export const TripListQuery = Pagination.extend({
   /** inclusive */
   to: IsoDate.optional(),
   order: SortOrder.default("desc"),
-});
+}).check(checkRange());
 
 // ---------------------------------------------------------------- workflow 1
 
@@ -90,7 +125,9 @@ export const BookTripBody = z.object({
 });
 
 export const UpdateTripStatusBody = z.object({
-  status: z.enum(["IN TRANSIT", "COMPLETED"]),
+  status: z.enum(["IN TRANSIT", "COMPLETED"], {
+    message: 'Status must be "IN TRANSIT" or "COMPLETED"',
+  }),
 });
 
 export const TopUpBody = z.object({
@@ -105,17 +142,19 @@ export const AuditQuery = Pagination.extend({
   to: IsoDate.optional(),
   action: AuditActionSchema.optional(),
   order: SortOrder.default("desc"),
-});
+}).check(checkRange());
 
 // ---------------------------------------------------------------- analytics (workflow 2 + MV)
 
-export const MovingAvgQuery = z.object({
-  from: IsoDate.optional(),
-  to: IsoDate.optional(),
-  vehicleId: Uuid.optional(),
-  /** keep only the vehicles ranked <= topN on the LAST day of the range (chart readability) */
-  topN: z.coerce.number().int().min(1).max(100).default(5),
-});
+export const MovingAvgQuery = z
+  .object({
+    from: IsoDate.optional(),
+    to: IsoDate.optional(),
+    vehicleId: Uuid.optional(),
+    /** keep only the vehicles ranked <= topN on the LAST day of the range (chart readability) */
+    topN: z.coerce.number().int().min(1).max(100).default(5),
+  })
+  .check(checkRange(92));
 
 export const RankingQuery = z.object({
   date: IsoDate.optional(),
@@ -145,12 +184,14 @@ export const FleetQuery = z.object({
 
 // ---------------------------------------------------------------- reviews (workflow 4)
 
-export const ReviewSummaryQuery = z.object({
-  vehicleId: Uuid.optional(),
-  from: IsoDate.optional(),
-  to: IsoDate.optional(),
-  topTags: z.coerce.number().int().min(1).max(20).default(10),
-});
+export const ReviewSummaryQuery = z
+  .object({
+    vehicleId: Uuid.optional(),
+    from: IsoDate.optional(),
+    to: IsoDate.optional(),
+    topTags: z.coerce.number().int().min(1).max(20).default(10),
+  })
+  .check(checkRange());
 
 export const ReviewListQuery = Pagination.extend({
   vehicleId: Uuid.optional(),
