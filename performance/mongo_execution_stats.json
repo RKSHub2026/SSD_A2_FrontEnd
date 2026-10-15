@@ -1,33 +1,38 @@
 {
   "database": "ridesync_db",
-  "mongo_version": "8.0.29",
-  "generated_at": "2026-09-03T23:40:44.612702",
+  "mongo_version": "8.0.34",
+  "generated_at": "2026-10-15T03:59:41.553301+00:00",
+  "counts": {
+    "VehicleMetadata": 100,
+    "TripReviews": 100000,
+    "TelemetryPings": 495060
+  },
   "workflow3_geonear": {
-    "collection": "TelemetryPings",
-    "operator": "$geoNear",
-    "description": "Find 5 available vehicles within 5 km",
-    "max_distance_meters": 5000,
-    "filter": {
-      "isAvailable": true
-    },
-    "index_used": [
-      "location_2dsphere"
+    "description": "Nearest available vehicles (latest fresh ping per vehicle) within 5 km",
+    "indexes_used": [
+      "location_2dsphere_createdAt"
     ],
-    "nReturned_final_stage": 5,
-    "max_keysExamined_observed": 6654,
-    "max_docsExamined_observed": 215491,
-    "executionTimeMillisEstimate_last": 1039
+    "plan_stages": [
+      "FETCH",
+      "GEO_NEAR_2DSPHERE",
+      "IXSCAN"
+    ],
+    "collscan": false,
+    "max_keysExamined": 409990,
+    "max_docsExamined": 26840,
+    "max_executionTimeMillis": 840
   },
   "workflow4_facet": {
-    "collection": "TripReviews",
-    "operators": [
-      "$facet",
-      "$unwind"
+    "description": "Rating distribution, top tags ($unwind), average rating",
+    "note": "$facet sub-pipelines cannot use indexes; a collection scan is expected",
+    "indexes_used": [],
+    "plan_stages": [
+      "COLLSCAN",
+      "PROJECTION_SIMPLE"
     ],
-    "description": "Rating distribution, common feedback tags, overall average rating",
-    "nReturned_final_stage": 1,
-    "max_keysExamined_observed": 0,
-    "max_docsExamined_observed": 100000,
-    "executionTimeMillisEstimate_last": 133
+    "collscan": true,
+    "max_keysExamined": 0,
+    "max_docsExamined": 100000,
+    "max_executionTimeMillis": 194
   }
 }
