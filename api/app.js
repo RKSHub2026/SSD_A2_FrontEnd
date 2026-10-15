@@ -55,7 +55,9 @@ export function createApp(deps) {
 function errorHandler(err, req, res, next) {
   if (res.headersSent) return next(err); // e.g. an SSE stream already started
   const { status, body } = toApiError(err);
-  if (status >= 500) console.error(`[api] ${req.method} ${req.originalUrl} ->`, err);
+  // a real bug gets the full stack; a database outage (503) is expected and gets one line
+  if (status === 500) console.error(`[api] ${req.method} ${req.originalUrl} ->`, err);
+  else if (status > 500) console.warn(`[api] ${req.method} ${req.originalUrl} -> ${status} ${body.error.code} (${err?.message})`);
   res.status(status).json(body);
 }
 

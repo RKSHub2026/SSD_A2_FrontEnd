@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RideSync wireframes</title>
+<!--
+  Low-fidelity wireframes for the six RideSync screens (CS6.302 A2, Team 11).
+  Open this file in a browser, or render the PNGs next to it with:  node docs/design/wireframes/render.js
+  Grey boxes only: layout and hierarchy, not colour or exact sizes. The finished look is in ../README.md (style guide).
+-->
+<style>
+  :root { --line: #555; --soft: #bbb; --fill: #eee; --note: #b5490f; --bg: #fff; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #d9d9d9; font: 14px/1.35 "Comic Neue", "Segoe Print", "Bradley Hand", system-ui, sans-serif; color: #222; }
+  .frame { width: 1100px; background: var(--bg); border: 2px solid var(--line); border-radius: 10px; margin: 0 auto 32px; overflow: hidden; }
+  .frame--phone { width: 375px; border-radius: 24px; }
+  .bar { display: flex; align-items: center; gap: 14px; padding: 10px 16px; border-bottom: 2px solid var(--line); background: var(--fill); }
+  .logo { font-weight: 700; letter-spacing: .05em; }
+  .nav { display: flex; gap: 14px; }
+  .nav span { padding: 2px 0; white-space: nowrap; }
+  .nav .on { border-bottom: 3px solid var(--line); font-weight: 700; }
+  .spacer { flex: 1; }
+  .body { padding: 18px 20px 22px; display: grid; gap: 14px; }
+  h1 { margin: 0; font-size: 26px; }
+  .sub { color: #666; margin-top: -8px; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .grid { display: grid; gap: 14px; }
+  .g2 { grid-template-columns: 1.6fr 1fr; }
+  .g3 { grid-template-columns: 1fr 1fr 1fr; }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  .box { border: 2px solid var(--line); border-radius: 8px; padding: 12px; display: grid; gap: 8px; align-content: start; }
+  .box h2 { margin: 0; font-size: 16px; }
+  .ctl { border: 1.5px solid var(--line); border-radius: 6px; padding: 4px 10px; background: #fff; white-space: nowrap; }
+  .ctl.input { min-width: 130px; color: #888; }
+  .btn { border: 2px solid var(--line); border-radius: 6px; padding: 4px 12px; font-weight: 700; background: var(--fill); white-space: nowrap; }
+  .btn.primary { background: #444; color: #fff; }
+  .seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .seg span { padding: 4px 12px; border-left: 1.5px solid var(--line); }
+  .seg span:first-child { border-left: 0; }
+  .seg .on { background: #444; color: #fff; }
+  .plate { display: inline-block; border: 2px solid var(--line); border-radius: 4px; padding: 0 6px; font-family: monospace; font-weight: 700; background: #f3f3f3; }
+  .badge { border: 1.5px solid var(--line); border-radius: 999px; padding: 0 8px; font-size: 12px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--soft); white-space: nowrap; }
+  th { border-bottom: 2px solid var(--line); }
+  .num { text-align: right; }
+  .muted { color: #777; }
+  .ph { position: relative; border: 2px dashed var(--line); border-radius: 8px; min-height: 220px; display: grid; place-items: center; color: #666; text-align: center; padding: 10px;
+        background: linear-gradient(to top right, transparent calc(50% - 1px), var(--soft) 50%, transparent calc(50% + 1px)),
+                    linear-gradient(to top left, transparent calc(50% - 1px), var(--soft) 50%, transparent calc(50% + 1px)); }
+  .ph span { background: #fff; padding: 4px 8px; }
+  .alert { border: 2px solid var(--line); border-left-width: 8px; border-radius: 6px; padding: 8px 12px; display: grid; gap: 2px; }
+  .alert.bad { border-style: solid dashed dashed solid; }
+  .pager { display: flex; justify-content: space-between; align-items: center; }
+  .note { color: var(--note); font-size: 13px; border-left: 3px solid var(--note); padding-left: 8px; }
+  .figure { border: 2px solid var(--line); border-radius: 8px; padding: 10px; }
+  .figure b { display: block; font-size: 20px; }
+  .bars { display: grid; gap: 6px; }
+  .bars div { display: flex; gap: 8px; align-items: center; }
+  .bars i { display: block; height: 12px; background: #999; border-radius: 3px; }
+  .list { display: grid; gap: 6px; }
+  .list div { display: flex; gap: 8px; align-items: center; border-bottom: 1.5px solid var(--soft); padding-bottom: 6px; }
+  .stack { display: grid; gap: 10px; }
+  .caption { width: 1100px; margin: 0 auto 6px; font-weight: 700; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<!-- 1. Browse -->
+<div class="caption">1 · Browse — riders, vehicles and trips</div>
+<section class="frame" id="browse">
+  <div class="bar"><span class="logo">RIDESYNC</span><nav class="nav"><span class="on">Browse</span><span>Book a ride</span><span>Audit trail</span><span>Analytics</span><span>Map</span><span>Reviews</span></nav><span class="spacer"></span><span class="badge">● Databases online</span><span class="ctl">Choose a rider ▾</span></div>
+  <div class="body">
+    <div class="row"><h1>Browse</h1><span class="spacer"></span><span class="seg"><span>Riders</span><span>Vehicles</span><span class="on">Trips</span></span></div>
+    <div class="row"><span class="ctl">Status: Any ▾</span><span class="ctl input">Rider name…</span><span class="ctl input">From date</span><span class="ctl input">To date</span><span class="spacer"></span><span class="btn">Clear filters</span></div>
+    <table>
+      <tr><th>Trip</th><th>Rider</th><th>Vehicle</th><th>Status</th><th class="num">Fare ↓</th><th>Booked</th></tr>
+      <tr><td>2d166ba3</td><td>Rider_0042</td><td><span class="plate">MH12AB1004</span></td><td><span class="badge">Requested</span></td><td class="num">₹250.00</td><td>2 min ago</td></tr>
+      <tr><td>8a51c0e4</td><td>Rider_0007</td><td><span class="plate">MH04AB1031</span></td><td><span class="badge">In transit</span></td><td class="num">₹412.50</td><td>19 min ago</td></tr>
+      <tr><td>51fe02aa</td><td>Rider_0311</td><td><span class="plate">MH01AB1060</span></td><td><span class="badge">Completed</span></td><td class="num">₹198.00</td><td>1 h ago</td></tr>
+      <tr><td class="muted" colspan="6">… 20 rows per page (filters run in SQL; row click opens the detail view)</td></tr>
+    </table>
+    <div class="pager"><span>21–40 of 100,030</span><span class="row"><span class="btn">Previous</span><span>Page 2 of 5,002</span><span class="btn">Next</span></span></div>
+    <div class="note">Filters and page live in the URL (#/browse/trips?status=REQUESTED&amp;page=2), so reload and Back keep them. Empty result → “No trips match” + Clear filters.</div>
+  </div>
+</section>
+
+<!-- 2. Book a ride -->
+<div class="caption">2 · Book a ride — Workflow 1 (transaction)</div>
+<section class="frame" id="book">
+  <div class="bar"><span class="logo">RIDESYNC</span><nav class="nav"><span>Browse</span><span class="on">Book a ride</span><span>Audit trail</span><span>Analytics</span><span>Map</span><span>Reviews</span></nav><span class="spacer"></span><span class="badge">● Databases online</span><span class="ctl">Priya Iyer · ₹10,803.50 ▾</span></div>
+  <div class="body">
+    <h1>Book a ride for Priya Iyer</h1>
+    <div class="grid g2">
+      <div class="box">
+        <h2>New booking</h2>
+        <div class="stack"><span>Vehicle</span><span class="ctl input">Search plate… ▾ (only bookable cars)</span><span>Fare (₹1 – ₹10,000)</span><span class="ctl input">₹ 250</span><span class="row"><span class="btn primary">Book ride</span><span class="muted">Try a failure: busy car · second trip</span></span></div>
+      </div>
+      <div class="stack">
+        <div class="box"><h2>Wallet</h2><b style="font-size:22px">₹10,803.50</b><span class="row"><span class="ctl input">Amount ₹</span><span class="btn">Top up wallet</span></span></div>
+        <div class="box"><h2>Active trip</h2><span class="row"><span class="plate">MH12AB1004</span><span class="badge">Requested</span><span>₹250.00</span></span><span class="row"><span class="btn">Start trip</span>→<span class="btn">Complete trip</span><span class="muted">Try to skip</span></span></div>
+      </div>
+    </div>
+    <div class="alert"><b>✓ Ride booked. ₹250.00 taken from the wallet: ₹11,053.50 → ₹10,803.50</b><span>New audit entry: FARE_DEDUCTION −₹250.00, linked to trip 2d166ba3</span></div>
+    <div class="alert bad"><b>! Rider already has an active trip</b><span>Only one REQUESTED or IN TRANSIT trip per rider. Nothing was charged.</span><span class="muted">Code RS006 · blocked by idx_unique_active_rider_trip · [Go to active trip]</span></div>
+    <div class="note">Result shows ONE of the two boxes. RS004 (balance) offers “Top up ₹X” with the shortfall filled in.</div>
+  </div>
+</section>
+
+<!-- 3. Audit trail -->
+<div class="caption">3 · Audit trail — read-only wallet_audit_logs</div>
+<section class="frame" id="audit">
+  <div class="bar"><span class="logo">RIDESYNC</span><nav class="nav"><span>Browse</span><span>Book a ride</span><span class="on">Audit trail</span><span>Analytics</span><span>Map</span><span>Reviews</span></nav><span class="spacer"></span><span class="badge">● Databases online</span><span class="ctl">Priya Iyer · ₹10,803.50 ▾</span></div>
+  <div class="body">
+    <div class="row"><h1>Audit trail: Priya Iyer</h1><span class="spacer"></span><span>Wallet now <b>₹10,803.50</b></span></div>
+    <div class="row"><span class="ctl input">From date</span><span class="ctl input">To date</span><span class="ctl">Type: All ▾</span></div>
+    <div class="grid g4"><div class="figure">Top-ups<b>3</b></div><div class="figure">Added<b>+₹1,500.00</b></div><div class="figure">Fares<b>12</b></div><div class="figure">Deducted<b>−₹3,120.00</b></div></div>
+    <table>
+      <tr><th>When</th><th>Type</th><th class="num">Change</th><th class="num">Before</th><th class="num">After</th><th>Trip</th><th></th></tr>
+      <tr><td>15 Oct 10:42</td><td>Fare deduction</td><td class="num">−₹250.00</td><td class="num">₹11,053.50</td><td class="num">₹10,803.50</td><td>2d166ba3</td><td><span class="btn">Try to delete</span></td></tr>
+      <tr><td>15 Oct 10:40</td><td>Top-up</td><td class="num">+₹500.00</td><td class="num">₹10,553.50</td><td class="num">₹11,053.50</td><td>—</td><td><span class="btn">Try to delete</span></td></tr>
+    </table>
+    <div class="pager"><span>1–20 of 214</span><span class="row"><span class="btn">Previous</span><span class="btn">Next</span></span></div>
+    <div class="alert bad"><b>! Audit entries can't be changed</b><span class="muted">403 · RS010 · trg_wallet_audit_immutable refused the delete. The row is still there.</span></div>
+  </div>
+</section>
+
+<!-- 4. Analytics -->
+<div class="caption">4 · Analytics — Workflow 2 (window functions) and the materialized view</div>
+<section class="frame" id="analytics">
+  <div class="bar"><span class="logo">RIDESYNC</span><nav class="nav"><span>Browse</span><span>Book a ride</span><span>Audit trail</span><span class="on">Analytics</span><span>Map</span><span>Reviews</span></nav><span class="spacer"></span><span class="badge">● Databases online</span><span class="ctl">Choose a rider ▾</span></div>
+  <div class="body">
+    <div class="row"><h1>Analytics</h1><span class="spacer"></span><span class="ctl input">From date</span><span class="ctl input">To date</span><span class="ctl">Top 5 ▾</span></div>
+    <div class="grid g2">
+      <div class="box"><div class="row"><h2>7-day moving average of revenue</h2><span class="spacer"></span><span class="seg"><span class="on">Chart</span><span>Table</span></span></div><div class="ph"><span>Line chart (Chart.js)<br>one line per top vehicle, hover = day, plate, average</span></div></div>
+      <div class="box"><h2>Ranking on 15 Oct (DENSE_RANK)</h2>
+        <div class="list"><div>1 <span class="plate">MH09AB1009</span><span class="spacer"></span>₹1,071.74</div><div>2 <span class="plate">MH03AB1003</span><span class="spacer"></span>₹890.69</div><div>2 <span class="plate">MH17AB1017</span><span class="spacer"></span>₹890.69</div><div>3 <span class="plate">MH21AB1021</span><span class="spacer"></span>₹812.10</div></div>
+        <span class="muted">Click a day on the chart to rank that day</span></div>
+    </div>
+    <div class="box"><h2>Lifetime vehicle stats (mv_vehicle_stats)</h2>
+      <div class="alert"><span class="row"><b>! 3 new trips are not counted yet.</b><span class="muted">Last refreshed 10:31</span><span class="spacer"></span><span class="btn primary">Refresh statistics</span></span></div>
+      <table><tr><th>Rank</th><th>Vehicle</th><th>Class</th><th class="num">Trips</th><th class="num">Completed</th><th class="num">Earnings</th></tr><tr><td>1</td><td><span class="plate">MH09AB1009</span></td><td>Premium</td><td class="num">1,214</td><td class="num">1,206</td><td class="num">₹3.1L</td></tr></table>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Map -->
+<div class="caption">5 · Map — Workflow 3 ($geoNear), live positions</div>
+<section class="frame" id="map">
+  <div class="bar"><span class="logo">RIDESYNC</span><nav class="nav"><span>Browse</span><span>Book a ride</span><span>Audit trail</span><span>Analytics</span><span class="on">Map</span><span>Reviews</span></nav><span class="spacer"></span><span class="badge">● Databases online</span><span class="ctl">Choose a rider ▾</span></div>
+  <div class="body">
+    <div class="row"><h1>Map</h1><span class="spacer"></span><span class="ctl">Pickup: Dadar station ▾</span><span class="ctl">Radius 5 km ▾</span><span class="badge">● Live (change stream / polling 3 s)</span></div>
+    <div class="grid g2">
+      <div class="ph" style="min-height:360px"><span>Leaflet + OpenStreetMap (Mumbai)<br>pickup pin · 5 km circle · free cars solid, busy cars hollow<br>click anywhere = new origin</span></div>
+      <div class="box"><h2>Nearest available</h2>
+        <div class="list"><div>1 <span class="plate">MH07AB1007</span><span class="spacer"></span>0.41 km <span class="btn">Book</span></div><div>2 <span class="plate">MH22AB1022</span><span class="spacer"></span>0.88 km <span class="btn">Book</span></div><div>3 <span class="plate">MH31AB1031</span><span class="spacer"></span>1.30 km <span class="muted">busy</span></div></div>
+        <span class="muted">65 available · 30 busy · updated 2 s ago</span></div>
+    </div>
+    <div class="note">“Book” only when the API says bookable (checked in PostgreSQL). Tiles offline → notice; list and markers still work.</div>
+  </div>
+</section>
+
+<!-- 6. Reviews -->
+<div class="caption">6 · Reviews — Workflow 4 ($facet) and the flexible catalog</div>
+<section class="frame" id="reviews">
+  <div class="bar"><span class="logo">RIDESYNC</span><nav class="nav"><span>Browse</span><span>Book a ride</span><span>Audit trail</span><span>Analytics</span><span>Map</span><span class="on">Reviews</span></nav><span class="spacer"></span><span class="badge">● Databases online</span><span class="ctl">Choose a rider ▾</span></div>
+  <div class="body">
+    <div class="row"><h1>Reviews</h1><span class="spacer"></span><span class="ctl">Vehicle: All ▾</span><span class="ctl input">From date</span><span class="ctl input">To date</span></div>
+    <div class="grid g3">
+      <div class="figure">Average rating<b>3.84 / 5</b><span class="muted">100,000 reviews</span></div>
+      <div class="box"><h2>Ratings</h2><div class="bars"><div>5 <i style="width:70%"></i></div><div>4 <i style="width:55%"></i></div><div>3 <i style="width:30%"></i></div><div>2 <i style="width:14%"></i></div><div>1 <i style="width:9%"></i></div></div></div>
+      <div class="box"><h2>Common feedback</h2><div class="bars"><div>clean car <i style="width:60%"></i></div><div>on time <i style="width:48%"></i></div><div>polite <i style="width:40%"></i></div><div>late <i style="width:18%"></i></div></div></div>
+    </div>
+    <div class="box"><h2>Latest reviews</h2><table><tr><th>Rating</th><th>Tags</th><th>Rider</th><th>Vehicle</th><th>Date</th></tr><tr><td>★★★★☆</td><td>clean car, polite</td><td>Rider_0042</td><td><span class="plate">MH12AB1004</span></td><td>15 Oct</td></tr></table></div>
+    <div class="box"><h2>Vehicle catalog: VehicleMetadata (shown when one vehicle is chosen)</h2><div class="grid g3"><div>Specs (differ by fuel type: battery kWh vs engine cc)</div><div>Inspection history (date, result)</div><div><span class="btn">Show raw JSON</span></div></div></div>
+  </div>
+</section>
+
+<!-- Phone: Book a ride -->
+<div class="caption" style="width:375px">7 · Phone (375 px) — Book a ride</div>
+<section class="frame frame--phone" id="phone-book">
+  <div class="bar"><span class="logo">RIDESYNC</span><span class="spacer"></span><span class="badge">●</span><span class="ctl">Priya ▾</span></div>
+  <div class="bar" style="overflow:hidden"><nav class="nav"><span>Browse</span><span class="on">Book a ride</span><span>Audit trail</span><span>Analytics</span><span class="muted">Map →</span></nav></div>
+  <div class="body">
+    <h1>Book a ride</h1>
+    <div class="box"><h2>Wallet ₹10,803.50</h2><span class="row"><span class="ctl input" style="min-width:0;flex:1">Amount ₹</span><span class="btn">Top up</span></span></div>
+    <div class="box"><h2>New booking</h2><span class="ctl input">Search plate… ▾</span><span class="ctl input">₹ 250</span><span class="btn primary" style="text-align:center">Book ride</span></div>
+    <div class="alert"><b>✓ Ride booked</b><span>₹11,053.50 → ₹10,803.50</span></div>
+    <div class="note">Navigation scrolls sideways; columns stack; tables scroll inside their card, never the page.</div>
+  </div>
+</section>
+
+</body>
+</html>

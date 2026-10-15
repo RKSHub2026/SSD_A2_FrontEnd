@@ -1,0 +1,43 @@
+# Optional: PostgreSQL 16 and MongoDB 8 in containers, for machines without local databases.
+#
+#   docker compose up -d          first start loads sql/0*.sql (schema, triggers, procedures, view) and mongo/01 (validators, indexes)
+#   then, on the host:            python3 data_generations/postgres_seeder.py && python3 data_generations/mongo_seeder.py
+#                                 npm run dev
+#   docker compose down -v        removes the containers AND the data (the next "up" starts from an empty schema again)
+#
+# The ports and password match .env.example, so the app and the seeders need no changes.
+# Stop a local PostgreSQL/MongoDB first if one is already using port 5432 or 27017.
+# Note: the init scripts run only when the data volume is empty (first start).
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ridesync
+      POSTGRES_DB: ridesync_v2
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d:ro
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ridesync_v2"]
+      interval: 5s
+      retries: 20
+
+  mongo:
+    image: mongo:8
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo/01_collections_and_indexes.js:/docker-entrypoint-initdb.d/01_collections_and_indexes.js:ro
+      - mongodata:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      retries: 20
+
+volumes:
+  pgdata:
+  mongodata:

@@ -1,0 +1,65 @@
+/* ==========================================================================
+   RideSync design tokens. Every colour, size and radius used by the UI comes
+   from here; docs/design/README.md documents them (with contrast ratios).
+   ========================================================================== */
+:root {
+  /* ---- colour: base ---- */
+  --paper: #f4f6f5;        /* page background - road-marking off-white */
+  --surface: #ffffff;      /* panels, tables, inputs */
+  --surface-sunk: #eef1f0; /* table header, code, hover rows */
+  --ink: #1c2a33;          /* asphalt: body text, primary button   13.5:1 on paper */
+  --ink-2: #4a5963;        /* secondary text                        6.7:1 on paper */
+  --ink-3: #627078;        /* hints, placeholders    5.1:1 on white, 4.7:1 on paper, 4.5:1 on sunk */
+  --line: #c9d1ce;         /* dividers, panel borders (decorative) */
+  --line-strong: #8a969c;  /* input borders                         3.0:1 on white */
+
+  /* ---- colour: signature (license plates only) ---- */
+  --plate: #f4c21b;        /* Indian commercial-vehicle plate yellow */
+  --plate-ink: #15191c;    /*                                      10.6:1 on plate */
+
+  /* ---- colour: meaning (trip status, money, feedback) ---- */
+  --requested: #2a55a0;    --requested-bg: #e6edf8;
+  --transit: #0c6e55;      --transit-bg: #dff1ea;
+  --completed: #535f68;    --completed-bg: #ecefee;
+  --credit: #0c6e55;       /* top-ups, positive amounts */
+  --debit: #a61f26;        /* fare deductions, negative amounts */
+  --danger: #a61f26;       --danger-bg: #fbeaea;
+  --warn: #7a4b00;         --warn-bg: #fff4d6;
+  --focus: #2a55a0;
+
+  /* ---- type ---- */
+  --font-ui: "Barlow", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Barlow Condensed", "Barlow", "Arial Narrow", system-ui, sans-serif;
+  /* modular scale, ratio 1.2 from 15px */
+  --text-xs: 0.8125rem;   /* 13px  table meta, hints */
+  --text-sm: 0.875rem;    /* 14px  secondary */
+  --text-md: 0.9375rem;   /* 15px  body */
+  --text-lg: 1.125rem;    /* 18px  panel titles */
+  --text-xl: 1.375rem;    /* 22px  section titles */
+  --text-2xl: 1.875rem;   /* 30px  page titles */
+  --text-3xl: 2.5rem;     /* 40px  big figures */
+  --leading: 1.5;
+  --leading-tight: 1.15;
+
+  /* ---- space (4px grid) ---- */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+
+  /* ---- shape: radius grows with the size of the thing ---- */
+  --r-plate: 3px;
+  --r-control: 6px;
+  --r-panel: 10px;
+
+  /* ---- layout ---- */
+  --page-max: 1200px;
+  --header-h: 60px;
+
+  /* ---- motion ---- */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --fast: 120ms;
+  --slow: 240ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --fast: 0ms; --slow: 0ms; }
+}

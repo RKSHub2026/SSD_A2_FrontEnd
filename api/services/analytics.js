@@ -99,9 +99,19 @@ const STAT_SORT = {
   license_plate: "s.license_plate",
 };
 
+/** Fleet-wide totals, read from the materialized view (not the live tables). */
+const SUMMARY_SQL = `
+  SELECT count(*)::int                                   AS vehicles,
+         (count(*) FILTER (WHERE s.is_active))::int      AS "activeVehicles",
+         COALESCE(sum(s.total_trips), 0)::int            AS "totalTrips",
+         COALESCE(sum(s.completed_trips), 0)::int        AS "completedTrips",
+         COALESCE(sum(s.total_earnings), 0)              AS "totalEarnings",
+         max(s.last_trip_at)                             AS "lastTripAt"
+  FROM mv_vehicle_stats s`;
+
 /** GET /api/analytics/vehicle-stats - the materialized view, ranked by earnings. */
 export async function vehicleStats(db, q) {
-  const [items, count, fresh] = await Promise.all([
+  const [items, summary, fresh] = await Promise.all([
     db.query(
       `SELECT ${MV_STAT_COLS},
               (RANK() OVER (ORDER BY s.total_earnings DESC))::int AS "earningsRank"
@@ -110,10 +120,10 @@ export async function vehicleStats(db, q) {
        LIMIT $1 OFFSET $2`,
       [q.pageSize, offsetOf(q.page, q.pageSize)],
     ),
-    one(db, "SELECT count(*)::int AS total FROM mv_vehicle_stats"),
+    one(db, SUMMARY_SQL),
     freshness(db),
   ]);
-  return { ...paginate(items.rows, count.total, q.page, q.pageSize), freshness: fresh };
+  return { ...paginate(items.rows, summary.vehicles, q.page, q.pageSize), summary, freshness: fresh };
 }
 
 /**

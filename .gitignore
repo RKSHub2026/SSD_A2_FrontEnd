@@ -1,10 +1,9 @@
 node_modules/
 .env
-.vscode
 .venv/
 venv/
 __pycache__/
+*.pyc
 playwright-report/
 test-results/
 coverage/
-*.pyc

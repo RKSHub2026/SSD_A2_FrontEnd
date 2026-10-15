@@ -43,7 +43,7 @@ from datetime import datetime, timedelta, timezone
 from pymongo import InsertOne, MongoClient
 
 # Shared fleet definition (same vehicle ids / plates / classes as PostgreSQL)
-from postgres_seeder import (CITY_CENTER, CITY_SPREAD_LAT, CITY_SPREAD_LON, pg_config,
+from postgres_seeder import (in_city, keep_in_city, random_city_point, pg_config,
                              riders, vehicle_fleet)
 
 
@@ -219,15 +219,9 @@ def seed_reviews(db, fleet):
 # TelemetryPings
 # ============================================================
 
-def clamp(val, centre, spread):
-    lo, hi = centre - spread, centre + spread
-    return min(max(val, lo), hi)
-
-
 def vehicle_track(vehicle_id, n, now):
     """Yield n pings for one vehicle: continuous random walk + sticky availability."""
-    lon = CITY_CENTER[0] + random.uniform(-CITY_SPREAD_LON, CITY_SPREAD_LON)
-    lat = CITY_CENTER[1] + random.uniform(-CITY_SPREAD_LAT, CITY_SPREAD_LAT)
+    lon, lat = random_city_point()
     available = random.random() < 0.75
     n_expired = int(n * EXPIRED_SHARE)
     n_live = n - n_expired
@@ -240,8 +234,7 @@ def vehicle_track(vehicle_id, n, now):
     times.sort()
 
     for ts in times:
-        lon = clamp(lon + random.gauss(0, 0.0004), CITY_CENTER[0], CITY_SPREAD_LON)
-        lat = clamp(lat + random.gauss(0, 0.0003), CITY_CENTER[1], CITY_SPREAD_LAT)
+        lon, lat = keep_in_city(lon + random.gauss(0, 0.0004), lat + random.gauss(0, 0.0003))
         if random.random() < 0.003:          # occasionally picks up / drops off a rider
             available = not available
         yield {
@@ -350,12 +343,13 @@ def run_live(args):
     known = latest_positions(col)
     state = {}
     for vid in ids:
-        if vid in known and known[vid].get("coords"):
-            lon, lat = known[vid]["coords"]
+        coords = known.get(vid, {}).get("coords")
+        if coords and in_city(*coords):
+            lon, lat = coords
             avail = known[vid].get("available", True)
         else:
-            lon = CITY_CENTER[0] + random.uniform(-CITY_SPREAD_LON, CITY_SPREAD_LON)
-            lat = CITY_CENTER[1] + random.uniform(-CITY_SPREAD_LAT, CITY_SPREAD_LAT)
+            # no ping yet, or an old ping from before the move to Mumbai
+            lon, lat = random_city_point()
             avail = random.random() < 0.75
         state[vid] = {"lon": lon, "lat": lat, "available": avail}
     print(f"Simulating {len(state)} vehicles every {args.interval}s -> "
@@ -372,13 +366,13 @@ def run_live(args):
                     if vid not in active:
                         state.pop(vid)
                 for vid in active - state.keys():
-                    state[vid] = {"lon": CITY_CENTER[0], "lat": CITY_CENTER[1], "available": True}
+                    lon, lat = random_city_point()
+                    state[vid] = {"lon": lon, "lat": lat, "available": True}
 
             now = datetime.now(timezone.utc)
             docs = []
             for vid, s in state.items():
-                s["lon"] = clamp(s["lon"] + random.gauss(0, 0.0004), CITY_CENTER[0], CITY_SPREAD_LON)
-                s["lat"] = clamp(s["lat"] + random.gauss(0, 0.0003), CITY_CENTER[1], CITY_SPREAD_LAT)
+                s["lon"], s["lat"] = keep_in_city(s["lon"] + random.gauss(0, 0.0004), s["lat"] + random.gauss(0, 0.0003))
                 if pg:
                     s["available"] = vid not in busy
                 elif random.random() < 0.02:

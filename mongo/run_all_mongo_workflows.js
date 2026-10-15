@@ -57,7 +57,7 @@ collections.forEach(n => {
 
 // ---------------- WORKFLOW 3 ----------------
 print("\n" + line); print("WORKFLOW 3: NEAREST AVAILABLE VEHICLES ($geoNear, 5 km)"); print(line);
-const riderLocation = [-73.9857, 40.7484];
+const riderLocation = [72.8426, 19.0178];   // Dadar station, Mumbai
 const since = new Date(Date.now() - 10 * 60 * 1000);
 const w3 = [
   { $geoNear: { near: { type: "Point", coordinates: riderLocation }, key: "location",

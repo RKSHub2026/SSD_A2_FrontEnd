@@ -23,7 +23,7 @@ The full per-file change list is in the README under *Changes to the inherited b
 
 ## What we changed and why
 
-All changes are edits to existing files; nothing was added or deleted.
+All backend changes are edits to the existing files in `sql/`, `mongo/`, `data_generations/` and `performance/`; no backend file was added or deleted. The A2 application lives in new folders (`api/`, `shared/`, `web/`, `test/`).
 
 1. **One fleet for both databases.** Deterministic `uuid5` ids are defined once in `postgres_seeder.py` and imported by the Mongo seeders. The front end can now join a map result or a review to a bookable vehicle.
 2. **Workflow 1 made usable from a UI.**
@@ -45,6 +45,7 @@ All changes are edits to existing files; nothing was added or deleted.
    - A compound 2dsphere index lets the freshness filter run inside the index.
    - `$jsonSchema` validators were added.
    - `mongo_seeder.py --live` streams pings, with availability taken from PostgreSQL's active trips.
+   - Telemetry moved from Manhattan to Mumbai, so the map matches the `MH..` (Maharashtra) plates. Cars stay on land strips from Colaba to Andheri.
 7. **Seed data that can demonstrate each workflow:** a 30-day audit history, 30 active trips, 5 inactive vehicles, an MV refresh after seeding, and ratings and tags that match each other.
 8. **Documentation:** README rewritten with setup steps, the error codes and the change log; schema map updated; new EXPLAIN evidence appended to the original.
 

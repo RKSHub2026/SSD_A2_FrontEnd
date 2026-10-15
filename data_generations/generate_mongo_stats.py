@@ -21,7 +21,7 @@ from pymongo import MongoClient
 from mongo_seeder import mongo_db_name, mongo_uri
 
 OUT_DIR = "performance"
-RIDER_LOCATION = [-73.9857, 40.7484]
+RIDER_LOCATION = [72.8426, 19.0178]   # Dadar station, Mumbai
 
 
 def geo_pipeline():
