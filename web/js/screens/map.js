@@ -338,8 +338,9 @@ export const mapScreen = {
         h(
           "div",
           { class: "filters" },
-          field({ label: "Pickup point", control: originSelect, hint: "Or click anywhere on the map" }),
+          field({ label: "Pickup point", control: originSelect }),
           field({ label: "Radius", control: radiusSelect }),
+          h("p", { class: "filters__note muted" }, "Or click anywhere on the map to search from there."),
         ),
         h(
           "div",
