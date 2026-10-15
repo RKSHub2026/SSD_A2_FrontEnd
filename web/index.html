@@ -3,35 +3,38 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
   <title>RideSync</title>
-  <style>
-    body { font: 15px/1.5 system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #1c2430; }
-    code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; }
-    pre { background: #0f1720; color: #d7e0ea; padding: 12px; border-radius: 8px; overflow: auto; }
-  </style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 20'%3E%3Crect x='1' y='1' width='28' height='18' rx='3' fill='%23f4c21b' stroke='%2315191c' stroke-width='2'/%3E%3Cpath d='M7 10h4M13 10h4M19 10h4' stroke='%2315191c' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <!-- Barlow is a road-signage style face. Offline, the fallbacks in tokens.css take over. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/components.css" />
 </head>
 <body>
-  <h1>RideSync</h1>
-  <p>Phase 1 placeholder - the real interface arrives in Phase 3. The API is served from this same server.</p>
-  <h2>API health</h2>
-  <pre id="health">loading…</pre>
-  <h2>Try</h2>
-  <ul>
-    <li><a href="/api/riders?q=rider_004&pageSize=5">/api/riders?q=rider_004&amp;pageSize=5</a></li>
-    <li><a href="/api/vehicles?available=true&pageSize=5">/api/vehicles?available=true&amp;pageSize=5</a></li>
-    <li><a href="/api/trips?active=true">/api/trips?active=true</a></li>
-    <li><a href="/api/trips?status=IN_TRANSIT">/api/trips?status=IN_TRANSIT</a> (friendly 400)</li>
-  </ul>
-  <script type="module">
-    import { formatDateTime } from "/shared/format.js";
-    const el = document.getElementById("health");
-    try {
-      const res = await fetch("/api/health");
-      const body = await res.json();
-      el.textContent = `${JSON.stringify(body, null, 2)}\n\nchecked ${formatDateTime(body.time)}`;
-    } catch (e) {
-      el.textContent = `API not reachable: ${e.message}`;
-    }
-  </script>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="app-header">
+    <div class="app-header__inner">
+      <a class="brand" href="#/" aria-label="RideSync home">
+        <svg class="brand__mark" viewBox="0 0 30 20" aria-hidden="true">
+          <rect x="1" y="1" width="28" height="18" rx="3" fill="#f4c21b" stroke="#15191c" stroke-width="2" />
+          <path d="M7 10h4M13 10h4M19 10h4" stroke="#15191c" stroke-width="2.4" stroke-linecap="round" />
+        </svg>
+        RideSync
+      </a>
+      <nav class="nav" id="nav" aria-label="Main"></nav>
+      <div class="header-tools" id="header-tools"></div>
+    </div>
+  </header>
+  <main class="page" id="main" tabindex="-1"></main>
+  <footer class="app-footer">
+    <span>RideSync, CS6.302 Assignment 2. Data from PostgreSQL and MongoDB.</span>
+    <span><a href="#/styleguide">Style guide</a></span>
+  </footer>
+  <noscript><p class="page">RideSync needs JavaScript. Start the server with <code>npm run dev</code> and reload.</p></noscript>
+  <script type="module" src="/js/app.js"></script>
 </body>
 </html>
