@@ -20,7 +20,7 @@
 db = db.getSiblingDB("ridesync_db");
 
 // ---- parameters (the API passes these) ----
-const riderLocation = [-73.9857, 40.7484];   // [longitude, latitude] - Empire State Building
+const riderLocation = [72.8426, 19.0178];    // [longitude, latitude] - Dadar station, Mumbai
 const maxDistanceMeters = 5000;              // 5 km
 const freshMinutes = 10;                     // ignore pings older than this
 const resultLimit = 5;

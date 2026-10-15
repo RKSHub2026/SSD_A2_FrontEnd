@@ -17,8 +17,13 @@ const int = new Intl.NumberFormat("en-IN");
 export const formatMoney = (v) =>
   v == null || Number.isNaN(v) ? "—" : inr.format(v);
 
+/**
+ * Compact money for big headline figures: "₹14.9L", "₹4.5Cr". Below one lakh
+ * the full amount is shown, because en-IN abbreviates thousands as "T",
+ * which readers take for trillion.
+ */
 export const formatMoneyCompact = (v) =>
-  v == null || Number.isNaN(v) ? "—" : inrCompact.format(v);
+  v == null || Number.isNaN(v) ? "—" : Math.abs(v) < 100_000 ? inr.format(v) : inrCompact.format(v);
 
 /** Signed amount, e.g. "+₹500.00" / "−₹120.00" (true minus sign). */
 export const formatSignedMoney = (v) =>

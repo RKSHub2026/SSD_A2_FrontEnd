@@ -6,9 +6,15 @@ same code the screens use.
 
 | Screenshot | What it shows |
 |---|---|
-| [`design/styleguide.png`](design/styleguide.png) | The full style guide page |
-| [`design/actor-switcher.png`](design/actor-switcher.png) | Header, navigation and the actor switcher open |
-| [`design/mobile.png`](design/mobile.png) | The same system at 375 px |
+| [`styleguide.png`](styleguide.png) | The full style guide page |
+| [`actor-switcher.png`](actor-switcher.png) | Header, navigation and the actor switcher open |
+| [`mobile.png`](mobile.png) | The same system at 375 px |
+| [`browse.png`](browse.png) | Browse: trips with filters, sortable table, plates and status badges |
+| [`book-success.png`](book-success.png) | Book a ride: the result after booking, with the balance change and the audit row the trigger wrote |
+| [`book-error.png`](book-error.png) | Book a ride: a second booking for the same rider, blocked by `idx_unique_active_rider_trip` (RS006) |
+| [`audit.png`](audit.png) | Audit trail: running balance, totals, and a delete refused by the trigger (RS010) |
+| [`mobile-book.png`](mobile-book.png) | Book a ride at 375 px |
+| [`reviews.png`](reviews.png) | Reviews: `$facet` rating distribution, top tags, average rating, latest reviews and a readable VehicleMetadata document |
 
 ---
 
@@ -175,7 +181,7 @@ watch the count rise, refresh, and watch it return to zero.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│ Map        Pickup [Empire State Building ▾]  Radius [5 km ▾]   ● Live (3 s)  │
+│ Map        Pickup [Dadar station ▾]        Radius [5 km ▾]   ● Live (3 s)  │
 ├───────────────────────────────────────────────┬──────────────────────────────┤
 │                                               │ Nearest available            │
 │   (Leaflet map: pickup pin, 5 km circle,      │ 1 ▮MH07AB1007▮ 0.41 km [Book]│

@@ -24,20 +24,24 @@ export const VEHICLE_CLASSES = ["Sedan", "SUV", "Hatchback"];
 
 /** Workflow 3 defaults (mongo/02_workflow3_geonear.js). GeoJSON order is [lon, lat]. */
 export const MAP_DEFAULTS = {
-  center: { lon: -73.9857, lat: 40.7484 }, // Empire State Building
+  center: { lon: 72.8426, lat: 19.0178 }, // Dadar station, Mumbai
   radiusMeters: 5000,
   freshMinutes: 10,
   limit: 10,
 };
 
-/** Preset origins for the map's origin picker (all inside the simulated area). */
+/**
+ * Preset pickup points for the map, all in Mumbai where the simulated fleet
+ * drives (data_generations/postgres_seeder.py LAND_ZONES). The first is the default.
+ */
 export const MAP_ORIGINS = [
-  { id: "esb", label: "Empire State Building", lon: -73.9857, lat: 40.7484 },
-  { id: "times-sq", label: "Times Square", lon: -73.9855, lat: 40.758 },
-  { id: "union-sq", label: "Union Square", lon: -73.9903, lat: 40.7359 },
-  { id: "grand-central", label: "Grand Central", lon: -73.9772, lat: 40.7527 },
-  { id: "wtc", label: "World Trade Center", lon: -74.0134, lat: 40.7127 },
-  { id: "central-park-s", label: "Central Park South", lon: -73.9762, lat: 40.7651 },
+  { id: "dadar", label: "Dadar station", lon: 72.8426, lat: 19.0178 },
+  { id: "csmt", label: "CSMT (Chhatrapati Shivaji Maharaj Terminus)", lon: 72.8355, lat: 18.9398 },
+  { id: "gateway", label: "Gateway of India", lon: 72.8347, lat: 18.922 },
+  { id: "lower-parel", label: "Lower Parel", lon: 72.8258, lat: 18.9953 },
+  { id: "bkc", label: "Bandra Kurla Complex", lon: 72.8656, lat: 19.0607 },
+  { id: "juhu", label: "Juhu Beach", lon: 72.8268, lat: 19.0988 },
+  { id: "airport", label: "Mumbai Airport, Terminal 2", lon: 72.8742, lat: 19.099 },
 ];
 
 /** Booking limits (sp_book_ride requires fare > 0; DECIMAL(10,2)). */

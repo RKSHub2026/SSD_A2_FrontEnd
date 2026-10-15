@@ -191,6 +191,7 @@ explain output.
 | M7 | `mongo_seeder.py` | Tags random regardless of rating; flat rating distribution | Rating skew; tags match the sentiment; `riderId`; richer `VehicleMetadata` (`specs`, `inspectionHistory`) | Meaningful charts and catalog view |
 | M8 | `mongo/03_workflow4_facet.js` | (logic correct) | Optional vehicle/date `$match` before `$facet`; always 5 rating buckets; review count | Reviews screen filters |
 | M9 | `run_all_mongo_workflows.js`, `generate_mongo_stats.py` | Old Workflow 3/4 pipelines; explain parsing tied to one MongoDB version | Fixed pipelines; explain summary searches the whole document | Evidence matches the real workflows |
+| M10 | `postgres_seeder.py`, `mongo_seeder.py`, `mongo/02`, `run_all_mongo_workflows.js`, `get_geo_summary.py`, `generate_mongo_stats.py`, `MongoCommands.txt` | Telemetry was generated around Manhattan while every plate is `MH..` (Maharashtra) | Fleet drives in Mumbai: land strips from Colaba to Andheri, random walk kept on land; Workflow 3 default origin is Dadar station; `--live` restarts cars whose last ping is outside Mumbai | Map, plates and pickup points describe one city; no cars in the sea |
 
 ### Scripts and documentation
 
@@ -273,7 +274,8 @@ erDiagram
   rows' timestamps to a 30-day spread, with the append-only guard disabled **only inside that seeding transaction**. Runtime code cannot do this.
 - **Workflow 3**: a vehicle's position and availability come from its most recent ping inside the radius within the last 10 minutes.
 - **Day boundaries** in Workflow 2 use the session `TimeZone` unless a `p_tz` argument is given.
-- Telemetry stays in Manhattan (A1 choice) while plates keep the A1 `MH..` format. The data is synthetic.
+- Telemetry is simulated in Mumbai, matching the A1 `MH..` (Maharashtra) plates; A1 generated it in Manhattan. Cars move only on land strips
+  (`LAND_ZONES` in `postgres_seeder.py`), and the map's pickup points are Mumbai landmarks. The data is synthetic.
 
 ## Performance evidence
 

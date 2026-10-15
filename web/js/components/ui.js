@@ -4,7 +4,7 @@ import { h } from "../lib/dom.js";
 
 /**
  * Small presentational components. Each returns a DOM node; class names
- * match web/css/components.css and the catalogue in docs/design.md.
+ * match web/css/components.css and the catalogue in docs/design/README.md.
  */
 
 /** License plate chip - the one bold element of the design. */
@@ -61,10 +61,10 @@ export const panel = ({ title, description, actions, flush = false, foot }, ...b
     foot ? h("div", { class: "panel__foot" }, foot) : null,
   );
 
-export const figures = (items) =>
+export const figures = (items, { columns } = {}) =>
   h(
     "div",
-    { class: "figures" },
+    { class: `figures${columns ? ` figures--${columns}` : ""}` },
     items.map(({ label, value }) =>
       h("div", { class: "figure" }, h("span", { class: "figure__value" }, value), h("span", { class: "figure__label" }, label)),
     ),
@@ -145,19 +145,20 @@ export function showFieldErrors(form, fieldErrors, { focus = true } = {}) {
  * Inline error for a failed request. For RS006 / RS007 it names the partial
  * unique index that blocked the booking; for RS004 the CHECK constraint.
  */
-export function errorAlert(err, { onRetry } = {}) {
+export function errorAlert(err, { onRetry, actions } = {}) {
   const meta = [];
   if (err?.code) meta.push(h("span", {}, "Code ", h("code", {}, err.code)));
   if (err?.constraint) meta.push(h("span", {}, "Blocked by ", h("code", {}, err.constraint)));
   else if (err?.code === "RS004") meta.push(h("span", {}, "Blocked by ", h("code", {}, "CHECK (wallet_balance >= 0)")));
+  else if (err?.code === "RS010") meta.push(h("span", {}, "Blocked by ", h("code", {}, "trg_wallet_audit_immutable")));
   return h(
     "div",
     { class: "alert alert--error", role: "alert" },
     h("span", { class: "alert__icon", "aria-hidden": "true" }, "!"),
     h("span", { class: "alert__title" }, err?.title ?? "Something went wrong"),
     h("span", {}, err?.message ?? String(err)),
-    meta.length || onRetry
-      ? h("span", { class: "alert__meta" }, meta, onRetry ? h("button", { type: "button", class: "btn btn--sm btn--secondary", onclick: onRetry }, "Try again") : null)
+    meta.length || onRetry || actions
+      ? h("span", { class: "alert__meta" }, meta, onRetry ? h("button", { type: "button", class: "btn btn--sm btn--secondary", onclick: onRetry }, "Try again") : null, actions ?? null)
       : null,
   );
 }

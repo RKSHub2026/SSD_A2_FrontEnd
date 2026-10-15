@@ -30,7 +30,7 @@ import { h } from "../lib/dom.js";
 
 /**
  * Live style guide (#/styleguide): every token and component in each of its
- * states, rendered by the same code the screens use. docs/design.md
+ * states, rendered by the same code the screens use. docs/design/README.md
  * describes the rules; this page shows them.
  */
 
@@ -203,7 +203,7 @@ export const styleguideScreen = {
           "Rupees with two decimals and tabular figures, so columns line up. Wallet changes are signed: credits green, debits red, with a true minus sign.",
           h("div", { class: "row" }, money(8548), money(500, { signed: true }), money(-250, { signed: true }), h("span", { class: "money" }, formatMoneyCompact(1490423.5))),
         ),
-        section("Colour", "Contrast ratios are in docs/design.md. Text colours meet WCAG AA (4.5:1) on their backgrounds.", swatches),
+        section("Colour", "Contrast ratios are in docs/design/README.md. Text colours meet WCAG AA (4.5:1) on their backgrounds.", swatches),
         section("Type", "Barlow for text, Barlow Condensed for headings and figures, on a 1.2 scale from 15px. Figures are tabular everywhere.", type),
         section("Buttons", "One primary action per screen. Busy buttons show a spinner and a new label, and cannot be pressed twice.", buttons),
         section("Form fields", "Labels above fields; hints under them; errors replace nothing and say how to fix the value.", form),

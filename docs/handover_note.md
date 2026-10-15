@@ -45,6 +45,7 @@ All changes are edits to existing files; nothing was added or deleted.
    - A compound 2dsphere index lets the freshness filter run inside the index.
    - `$jsonSchema` validators were added.
    - `mongo_seeder.py --live` streams pings, with availability taken from PostgreSQL's active trips.
+   - Telemetry moved from Manhattan to Mumbai, so the map matches the `MH..` (Maharashtra) plates. Cars stay on land strips from Colaba to Andheri.
 7. **Seed data that can demonstrate each workflow:** a 30-day audit history, 30 active trips, 5 inactive vehicles, an MV refresh after seeding, and ratings and tags that match each other.
 8. **Documentation:** README rewritten with setup steps, the error codes and the change log; schema map updated; new EXPLAIN evidence appended to the original.
 

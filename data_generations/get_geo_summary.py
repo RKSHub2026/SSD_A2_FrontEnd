@@ -28,10 +28,10 @@ from pymongo import MongoClient
 from mongo_seeder import mongo_db_name, mongo_uri
 
 LOCATIONS = [
-    ("Empire State Building", [-73.9857, 40.7484]),
-    ("Times Square", [-73.9855, 40.7580]),
-    ("Union Square", [-73.9903, 40.7359]),
-    ("World Trade Center", [-74.0134, 40.7127]),
+    ("Dadar station", [72.8426, 19.0178]),
+    ("CSMT", [72.8355, 18.9398]),
+    ("Bandra Kurla Complex", [72.8656, 19.0607]),
+    ("Mumbai Airport T2", [72.8742, 19.0990]),
 ]
 MAX_DISTANCE_M = 5000
 
