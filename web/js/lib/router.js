@@ -45,8 +45,17 @@ export function href(path, query = {}) {
   return `#${path}${s ? `?${s}` : ""}`;
 }
 
-export function navigate(path, query = {}, { replace = false } = {}) {
+/**
+ * silent: update the URL (replaceState) without re-rendering. List screens
+ * use it for filters and paging, so the search box keeps focus while typing
+ * and the screen reloads only its data.
+ */
+export function navigate(path, query = {}, { replace = false, silent = false } = {}) {
   const target = href(path, query);
+  if (silent) {
+    if (target !== window.location.hash) history.replaceState(null, "", target);
+    return;
+  }
   if (target === window.location.hash) return render();
   if (replace) {
     history.replaceState(null, "", target);
@@ -56,10 +65,15 @@ export function navigate(path, query = {}, { replace = false } = {}) {
   }
 }
 
-/** Merges into the current query (page, filters) - one history entry. */
+/** Merges into the current query (page, filters); undefined removes a key. */
 export function setQuery(patch, opts) {
   const { path, query } = location();
   navigate(path, { ...query, ...patch }, opts);
+}
+
+/** Replaces the whole query of the current path. */
+export function replaceQuery(query, opts) {
+  navigate(location().path, query, opts);
 }
 
 /** Called after each render with { path, screen } (nav highlighting). */

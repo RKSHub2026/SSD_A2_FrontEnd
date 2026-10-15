@@ -1,6 +1,6 @@
 /* ==========================================================================
    Components. One block per component; modifiers use --double-dash.
-   docs/design.md shows each one and its states; #/styleguide renders them live.
+   docs/design/README.md shows each one and its states; #/styleguide renders them live.
    ========================================================================== */
 
 /* ---------------------------------------------------------------- button */
@@ -105,7 +105,7 @@
 .table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
 .table th, .table td { padding: 10px var(--s-4); text-align: left; vertical-align: middle; border-bottom: 1px solid var(--line); }
 .table th { background: var(--surface-sunk); color: var(--ink-2); font-weight: 600; white-space: nowrap; position: sticky; top: 0; }
-.table tbody tr:last-child td { border-bottom: 0; }
+.table tbody tr:last-child > * { border-bottom: 0; }
 .table tbody tr:hover { background: #f8faf9; }
 .table .num { text-align: right; }
 .table tr[data-href] { cursor: pointer; }
@@ -239,3 +239,14 @@ th[aria-sort="descending"] .sort-btn::after { content: "↓"; opacity: 1; }
 .sg-type { display: grid; grid-template-columns: 110px 1fr; align-items: baseline; gap: var(--s-4); }
 .sg-type code { justify-self: start; }
 .sg-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s-4); max-width: 760px; align-items: start; }
+
+/* ---------------------------------------------------------------- header tools on phones */
+.header-tools { min-width: 0; }
+.actor, .actor__button { min-width: 0; }
+@media (max-width: 480px) {
+  .header-tools { gap: var(--s-2); }
+  .actor__prefix { display: none; }          /* the button's aria-label still says "Acting as" */
+  .actor__button { max-width: calc(100vw - 32px - 150px); padding: 0 var(--s-2); }
+  .actor__balance { flex: none; }
+}
+.figures--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }

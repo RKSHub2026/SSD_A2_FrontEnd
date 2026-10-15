@@ -331,9 +331,13 @@ Rows of `mv_vehicle_stats`.
       "totalTrips": 41, "completedTrips": 40, "totalEarnings": 20233.01, "lastTripAt": "…", "earningsRank": 1 }
   ],
   "page": 1, "pageSize": 20, "total": 100, "totalPages": 5,
+  "summary": { "vehicles": 100, "activeVehicles": 95, "totalTrips": 100030, "completedTrips": 100000,
+               "totalEarnings": 45012345.67, "lastTripAt": "…" },
   "freshness": { "refreshedAt": "…", "liveTrips": 100031, "tripsInView": 100030, "tripsNotInView": 1 }
 }
 ```
+
+`summary` holds fleet-wide totals summed over the whole view (all pages), so they lag the live tables in the same way as the rows.
 
 `totalTrips` counts trips of every status. `totalEarnings` counts completed trips only. `earningsRank` is the rank across the whole view.
 `freshness.tripsNotInView` is how many trips were created since the last refresh, so the UI can show "1 new trip not counted yet".
@@ -366,17 +370,17 @@ The same pipeline as `mongo/02_workflow3_geonear.js`:
 
 | Param | Default | Range |
 |---|---|---|
-| `lon`, `lat` | −73.9857, 40.7484 (Empire State Building) | |
+| `lon`, `lat` | 72.8426, 19.0178 (Dadar station, Mumbai) | |
 | `radiusMeters` | 5000 | 100–20000 |
 | `freshMinutes` | 10 | 1–120 |
 | `limit` | 10 | 1–50 |
 
 ```json
 {
-  "origin": { "lon": -73.9857, "lat": 40.7484 }, "radiusMeters": 5000, "freshMinutes": 10, "queryMs": 12,
+  "origin": { "lon": 72.8426, "lat": 19.0178 }, "radiusMeters": 5000, "freshMinutes": 10, "queryMs": 12,
   "items": [
     { "vehicleId": "…", "licensePlate": "MH07AB1007", "class": "SUV", "make": "…", "model": "…",
-      "distanceKm": 0.412, "location": { "lon": -73.9861, "lat": 40.7519 }, "lastSeen": "…", "bookable": true }
+      "distanceKm": 0.412, "location": { "lon": 72.8451, "lat": 19.0203 }, "lastSeen": "…", "bookable": true }
   ]
 }
 ```
@@ -393,7 +397,7 @@ The latest fresh ping for every vehicle, available and busy, for the map markers
   "freshMinutes": 10, "generatedAt": "…",
   "counts": { "total": 95, "available": 65, "busy": 30 },
   "items": [ { "vehicleId": "…", "licensePlate": "…", "class": "…", "make": "…", "model": "…",
-               "isAvailable": true, "location": { "lon": -73.98, "lat": 40.75 }, "lastSeen": "…" } ]
+               "isAvailable": true, "location": { "lon": 72.84, "lat": 19.02 }, "lastSeen": "…" } ]
 }
 ```
 
